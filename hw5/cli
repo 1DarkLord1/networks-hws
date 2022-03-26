@@ -53,6 +53,21 @@ def send_email(
     port: int,
     by_sockets: bool,
 ):
+    """
+    Task №1. You can choose to use smtlib sendind (task 1.1) or sockets (task 1.2) by changing --by-sockets flag.
+
+    Example:
+
+    \b
+    send-email
+    --msg-path /home/dword/Desktop/networks-hws/hw5/data/img.jpg
+    --from-addr network_course@mail.ru
+    --password abcdef
+    --to-addr john_doe@gmail.com
+    --host smtp.mail.ru
+    --by-sockets
+    """
+
     sender = EmailSender(
         msg_path=msg_path,
         from_addr=from_addr,
@@ -80,6 +95,12 @@ def send_email(
     help='Server port',
 )
 def rcr_client(cmd: str, server_addr: str, server_port: int):
+    """
+    Task №2. Remote command runner client.
+
+    Example: python3 cli rcr-client -c "uname" -a "127.0.0.1" -p 8080
+    """
+
     cmd_runner_client(server_addr, server_port, cmd)
 
 
@@ -93,6 +114,12 @@ def rcr_client(cmd: str, server_addr: str, server_port: int):
     help='Desired port',
 )
 def rcr_server(addr: str, port: int):
+    """
+    Task №2. Remote command runner server.
+
+    Example: python3 cli rcr-server -a "127.0.0.1" -p 8080
+    """
+
     cmd_runner_server(addr, port)
 
 
@@ -106,6 +133,12 @@ def rcr_server(addr: str, port: int):
     help='Desired port',
 )
 def udp_server(addr: str, port: int):
+    """
+    Task №3. UPD broadcast server.
+
+    Example: python3 cli udp-server -a "127.0.0.1" -p 8080
+    """
+
     udp_br_server(addr, port)
 
 
@@ -119,6 +152,12 @@ def udp_server(addr: str, port: int):
     help='Server port',
 )
 def udp_client(server_addr: str, server_port: int):
+    """
+    Task №3. UPD broadcast client.
+
+    Example: python3 cli udp-client -a "127.0.0.1" -p 8080
+    """
+
     udp_br_client(server_addr, server_port)
 
 
