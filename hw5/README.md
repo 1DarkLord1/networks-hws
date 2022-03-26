@@ -27,6 +27,6 @@ Try commands:
 
 `python3 cli rcr-server --help`
 
-`python3 cli udp-server --help`
+`python3 cli udp-client --help`
 
 `python3 cli udp-server --help`
