@@ -1,0 +1,171 @@
+import logging
+
+import click
+
+from remote_cmd_runner import cmd_runner_client, cmd_runner_server
+from smtp_client import EmailSender
+from udp_broadcast import udp_br_server, udp_br_client
+
+
+@click.group()
+def networks_cli():
+    pass
+
+
+@networks_cli.command()
+@click.option(
+    '--msg-path', '-s', required=True, nargs=1, type=click.Path(exists=True),
+    help='File with data to send',
+)
+@click.option(
+    '--from-addr', '-f', required=True, nargs=1, type=str,
+    help='User email address'
+)
+@click.option(
+    '--password', '-w', required=True, nargs=1, type=str,
+    help='User password',
+)
+@click.option(
+    '--to-addr', '-t', required=True, nargs=1, type=str,
+    help='Destination email address',
+)
+@click.option(
+    '--host', '-h', required=True, nargs=1, type=str,
+    help='Desired host',
+)
+@click.option(
+    '--port', '-p', required=False, default=465, show_default=True, nargs=1, type=int,
+    help='Desired port',
+)
+@click.option(
+    '--by-sockets', '-b',
+    is_flag=True,
+    default=False,
+    show_default=True,
+    help='Send email using sockets or smtplib flag',
+)
+def send_email(
+    msg_path: str,
+    from_addr: str,
+    password: str,
+    to_addr: str,
+    host: str,
+    port: int,
+    by_sockets: bool,
+):
+    """
+    Task №1. You can choose to use smtlib sendind (task 1.1) or sockets (task 1.2) by changing --by-sockets flag.
+
+    Example:
+
+    \b
+    send-email
+    --msg-path /home/dword/Desktop/networks-hws/hw5/data/img.jpg
+    --from-addr network_course@mail.ru
+    --password abcdef
+    --to-addr john_doe@gmail.com
+    --host smtp.mail.ru
+    --by-sockets
+    """
+
+    sender = EmailSender(
+        msg_path=msg_path,
+        from_addr=from_addr,
+        password=password,
+        to_addr=to_addr,
+        host=host,
+        port=port,
+        by_sockets=by_sockets,
+    )
+
+    sender.send_email()
+
+
+@networks_cli.command()
+@click.option(
+    '--cmd', '-c', required=True, nargs=1, type=str,
+    help='Cmd to remote running',
+)
+@click.option(
+    '--server-addr', '-a', required=True, nargs=1, type=str,
+    help='Server address',
+)
+@click.option(
+    '--server-port', '-p', required=True, nargs=1, type=int,
+    help='Server port',
+)
+def rcr_client(cmd: str, server_addr: str, server_port: int):
+    """
+    Task №2. Remote command runner client.
+
+    Example: python3 cli rcr-client -c "uname" -a "127.0.0.1" -p 8080
+    """
+
+    cmd_runner_client(server_addr, server_port, cmd)
+
+
+@networks_cli.command()
+@click.option(
+    '--addr', '-a', required=False, default='127.0.0.1', show_default=True, nargs=1, type=str,
+    help='Address of host',
+)
+@click.option(
+    '--port', '-p', required=False, default=8080, show_default=True, nargs=1, type=int,
+    help='Desired port',
+)
+def rcr_server(addr: str, port: int):
+    """
+    Task №2. Remote command runner server.
+
+    Example: python3 cli rcr-server -a "127.0.0.1" -p 8080
+    """
+
+    cmd_runner_server(addr, port)
+
+
+@networks_cli.command()
+@click.option(
+    '--addr', '-a', required=False, default='255.255.255.255', show_default=True, nargs=1, type=str,
+    help='Address of host',
+)
+@click.option(
+    '--port', '-p', required=False, default=8080, show_default=True, nargs=1, type=int,
+    help='Desired port',
+)
+def udp_server(addr: str, port: int):
+    """
+    Task №3. UPD broadcast server.
+
+    Example: python3 cli udp-server -a "127.0.0.1" -p 8080
+    """
+
+    udp_br_server(addr, port)
+
+
+@networks_cli.command()
+@click.option(
+    '--server-addr', '-a', required=True, nargs=1, type=str,
+    help='Server address',
+)
+@click.option(
+    '--server-port', '-p', required=True, nargs=1, type=int,
+    help='Server port',
+)
+def udp_client(server_addr: str, server_port: int):
+    """
+    Task №3. UPD broadcast client.
+
+    Example: python3 cli udp-client -a "127.0.0.1" -p 8080
+    """
+
+    udp_br_client(server_addr, server_port)
+
+
+if __name__ == '__main__':
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)8s] %(module)s: %(message)s (%(filename)s:%(lineno)4s)',
+        datefmt='%Y-%m-%d %H:%M:%S',
+    )
+
+    networks_cli()
