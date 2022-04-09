@@ -1,0 +1,104 @@
+import json
+import typing as tp
+
+import click
+
+from ftp_client import FtpClient
+
+
+@click.group()
+def ftp_client_cli():
+    pass
+
+
+@ftp_client_cli.command()
+@click.option(
+    '--server-addr', '-a', required=False, default='127.0.0.1',
+    show_default=True, nargs=1, type=str,
+    help='Server address',
+)
+@click.option(
+    '--server-port', '-p', required=False, default=21,
+    show_default=True, nargs=1, type=int,
+    help='Server port',
+)
+@click.option(
+    '--user', '-u', required=True, nargs=1, type=str,
+    help='User name'
+)
+@click.option(
+    '--passwd', '-s', required=True, nargs=1, type=str,
+    help='User password',
+)
+@click.option(
+    '--retrfs', '-r', default=False, show_default=True, is_flag=True,
+    help='Retrieve tree of all directories and files on the server',
+)
+@click.option(
+    '--upload', '-l', required=False,
+    show_default=True, nargs=2, type=click.Path(),
+    help='Arguments: <file local path> <directory remote path>',
+)
+@click.option(
+    '--download', '-d', required=False,
+    show_default=True, nargs=2, type=click.Path(),
+    help='Arguments: <file remote path> <directory local path>',
+)
+def ftp_client(
+    server_addr: str,
+    server_port: int,
+    user: str,
+    passwd: str,
+    retrfs: bool,
+    upload: tp.Tuple[tp.Optional[str]],
+    download: tp.Tuple[tp.Optional[str]],
+):
+    """
+
+
+    Retrieve all files and directories on server:
+
+    \b
+    python cli ftp-client
+    --addr 127.0.0.1
+    --port 21
+    --user TestUser
+    --passwd 123
+    --retrfs
+
+    Upload file to the server:
+
+    \b
+    python cli ftp-client
+    --addr 127.0.0.1
+    --port 21
+    --user TestUser
+    --passwd 123
+    --upload /local/some_dir/file.txt /remote/other_dir
+
+    Download file from the server:
+
+    \b
+    python cli ftp-client
+    --addr 127.0.0.1
+    --port 21
+    --user TestUser
+    --passwd 123
+    --download /remote/other_dir/file.txt /local/some_dir
+    """
+
+    with FtpClient(server_addr, server_port, user, passwd) as client:
+        if retrfs:
+            print(json.dumps(client.retrfs(), indent=4, sort_keys=True, ensure_ascii=False))
+
+        if upload:
+            client.upload(*upload)
+            print('File successfully uploaded!')
+
+        if download:
+            client.download(*download)
+            print('File successfully downloaded!')
+
+
+if __name__ == '__main__':
+    ftp_client_cli()
