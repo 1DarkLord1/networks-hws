@@ -28,10 +28,11 @@ class StopAndWaitSocket:
         self._socket.bind((addr, port))
 
         self._num = 0
+        self._last_num = -1
         self._PKTSIZE = 256
         self._BUFSIZE = 512
         self._BASE = 16
-        self._pkts = set()
+        # self._pkts = set()
 
     def connect(self, addr: str, port: int) -> None:
         self._addr = (addr, port)
@@ -71,7 +72,8 @@ class StopAndWaitSocket:
                 continue
 
             if num != self._num:
-                if raw_msg in self._pkts:
+                # if raw_msg in self._pkts:
+                if num == self._last_num:
                     print(f'Pkt{num} duplicate received. Continue waiting pkt{self._num}...')
                     self._socket.sendto(self._pack_msg(bytes(), num), addr)
                 else:
@@ -79,8 +81,9 @@ class StopAndWaitSocket:
                 continue
 
             self._socket.sendto(self._pack_msg(bytes(), num), addr)
+            self._last_num = num
             self._num ^= 1
-            self._pkts.add(raw_msg)
+            # self._pkts.add(raw_msg)
 
             print(f'Pkt{num} successfully received.\n')
 
@@ -134,7 +137,7 @@ class StopAndWaitSocket:
             self.send(chunk)
 
         self._num = 0
-        self._pkts.clear()
+        # self._pkts.clear()
 
         print(f'Data sent successfully\n')
 
@@ -152,6 +155,6 @@ class StopAndWaitSocket:
         print(f'Data received successfully\n')
 
         self._num = 0
-        self._pkts.clear()
+        # self._pkts.clear()
 
         return msg
