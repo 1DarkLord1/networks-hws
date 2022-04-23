@@ -7,7 +7,7 @@ def port_is_free(host: str, port: int):
     free = sock.connect_ex((host, port))
     sock.close()
 
-    return free != 0
+    return free == 0
 
 
 if __name__ == '__main__':
