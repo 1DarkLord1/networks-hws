@@ -1,0 +1,3 @@
+CANVAS_SIZE = (1000, 500)
+DOT_RADIUS = 6
+SERVER_ADDR = ('localhost', 8000)
